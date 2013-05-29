@@ -5,7 +5,7 @@ tput bold
 cat << '--README--'
 This Script Is Created for :- 
   - Auto add Linux Host into NagiOS Server
-	- *Required input file with following details 
+  - *Required input file with following details 
 	
 	Hostname:IP_ADDRESS:LONG Name of Host 
 	
@@ -144,8 +144,8 @@ echo "
 #--------------------------------------------------------------------------
 
 define host{
-		name                  linux-box_${HostName[$count]}             ; Name of this template
-		use                   generic-host          ; Inherit default values
+		name                  linux-box_${HostName[$count]}      ; Name of this template
+		use                   generic-host                       ; Inherit default values
 		check_period          24x7
 		check_interval        5
 		retry_interval        1
