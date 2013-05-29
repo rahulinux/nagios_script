@@ -301,28 +301,26 @@ for fcfg in $tmpCfg_Dir/*; {
 	fcfg=$(basename $fcfg)
 	if [ -f $nagios_dir/etc/objects/$fcfg ] && grep -q "$fcfg" $nagCfg ; then
 	
-				while [[ $REPLAY != "y" ]] || [[ $REPLAY != "n" ]]; do
+		while [[ $REPLAY != "y" ]] || [[ $REPLAY != "n" ]]; 
+		do
                         case $REPLAY in
                                 y|Y)
-								/bin/cp ${nagCfg}  ${nagCfg}_bkp_$(date +%F-%H-%M-%S)  # backup 
-								/bin/cp $tmpCfg_Dir/$fcfg  $nagios_dir/etc/objects/$fcfg
-								echo -e "\n Host Template Added"
-                                
-                                break
-                                ;;
-                                n|N)
-									echo "Please Configure host .cfg in nagios.cfg manually..."
-                                    exit 1
-                                    ;;
-                                *)
-                                    echo "Seems to be Host Already Added"
-                                    read -n 1  -p "Do want to Configure it forcefully .  (y/n)" REPLAY
-                                     ;;
-								 esac
-					done
+					/bin/cp ${nagCfg}  ${nagCfg}_bkp_$(date +%F-%H-%M-%S)  # backup 
+					/bin/cp $tmpCfg_Dir/$fcfg  $nagios_dir/etc/objects/$fcfg
+					echo -e "\n Host Template Added"
+                                        break ;;
+                                        
+                                n|N)    echo "Please Configure host .cfg in nagios.cfg manually..."
+                                        exit 1 ;;
+                                        
+                                *)      echo "Seems to be Host Already Added"
+                                        read -n 1  -p "Do want to Configure it forcefully .  (y/n)" REPLAY
+                                        ;;
+			 esac
+		done
 					
 else
-/bin/cp $tmpCfg_Dir/$fcfg  $nagios_dir/etc/objects/$fcfg
+        /bin/cp $tmpCfg_Dir/$fcfg  $nagios_dir/etc/objects/$fcfg
 echo "
 #--------------------------------------------------------------------------
 # Added by naghostadd.sh on $(date)
@@ -331,7 +329,6 @@ cfg_file=$nagios_dir/etc/objects/$fcfg
 " >> ${nagCfg}
 
 fi
-
 
 	}
 
@@ -362,8 +359,8 @@ elif  ! grep -q "check_nrpe" "${cmd_cfg}" ; then
 		while [[ $REPLAY != "y" ]] || [[ $REPLAY != "n" ]]; do
                         case $REPLAY in
                                 y|Y)
-								cp ${cmd_cfg} ${cmd_cfg}_bkp_$(date +%F_%H_%M_%S)   # backup 
-								echo "
+					cp ${cmd_cfg} ${cmd_cfg}_bkp_$(date +%F_%H_%M_%S)   # backup 
+					echo "
 #--------------------------------------------------------------------------
 # Added by naghostadd.sh on $(date)
 #--------------------------------------------------------------------------
@@ -380,13 +377,13 @@ echo -e "\ncheck_nrpe Template Added"
                                 break
                                 ;;
                                 n|N)
-									echo "Please Configure check_nrpe manually..."
+	  			    echo "Please Configure check_nrpe manually..."
                                     exit 1
                                     ;;
                                 *)
                                     echo ""
                                     read -n 1  -p "Do want to Configure it.  (y/n)" REPLAY
-                                     ;;
+                                    ;;
                          esac
             done
 fi
