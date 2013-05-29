@@ -394,26 +394,26 @@ fi
 Main() {
 	case $1 in 
 		
-			-f | --file )
-				input_file="$2"
-				[[ $# -ne 2 ]] && { show_Help; exit 1; };
-				check_Input_File
-				checks 
-				test_NagCfg >/dev/null 2>&1
-				[[ $? -ne 0 ]] && { echo "Your NagiOs Already having Some issue.. So Please clear that"; exit 1; }
-				create_Template_cfg
-				Populate_template
-				Add_host
-				test_NagCfg && echo "Host Successfully Added.. Now just Reload NagiOS and check from WebGUI."
-				;;
-			-r | --readme )
-				Read_Me
-				;;
-				-v|--verify)
-				test_NagCfg
-				;;
-			  *)
-				show_Help
+	-f | --file )
+		input_file="$2"
+		[[ $# -ne 2 ]] && { show_Help; exit 1; };
+		check_Input_File
+		checks 
+		test_NagCfg >/dev/null 2>&1
+		[[ $? -ne 0 ]] && { echo "Your NagiOs Already having Some issue.. So Please clear that"; exit 1; }
+		create_Template_cfg
+		Populate_template
+		Add_host
+		test_NagCfg && echo "Host Successfully Added.. Now just Reload NagiOS and check from WebGUI."
+		;;
+	-r | --readme )
+		Read_Me
+		;;
+		-v|--verify)
+		test_NagCfg
+		;;
+	  *)
+		show_Help
 				;;
 	esac
 }
