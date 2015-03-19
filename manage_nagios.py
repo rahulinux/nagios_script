@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 
-# Purpose : Add/Remove hosts from Nagios 
-# Date    : 17 March 2015
-# Author  : Rahul Patil
-
 import sys
-from pynag.Parsers import config 
+from pynag.Parsers import config
 import pynag.Model
 
 
@@ -29,7 +25,7 @@ nc.cleanup()
 def add():
     host = target_host
     group = sys.argv[3].split(",")
-    ## find services that this host belogns to 
+    ## find services that this host belogns to
     print "<<<==== 1# Adding Host ===>>>"
     if not nc.get_host(target_host):
         new_host = pynag.Model.Host()
@@ -50,11 +46,14 @@ def add():
         sys.stderr.write("%s Successfully Added\n" % ( target_host ))
     else:
         sys.stderr.write("%s already exists\n" % ( target_host ))
-    
-    
+
+
     print "<<<==== 2# Adding Host into group ===>>>"
-    for hostgroup in group: 
+    for hostgroup in group:
         hostgroup_obj = nc.get_hostgroup(hostgroup)
+        if not hostgroup_obj:
+            sys.stderr.write("Hostgroup not found: %s\n" % hostgroup)
+            continue
         member_list = sorted(set(nc._get_list(hostgroup_obj, 'members')))
         if host in member_list:
             print "Host %s already in %s Group" % ( host, hostgroup)
@@ -86,12 +85,12 @@ def delete():
                            host_list.append(host)
                 else:
                     continue
-     
-       
+
+
             ## Ignore if this host isn't listed
             if len(host_list) == 0:
                 continue
-    
+
             if len(host_list) > 1:
                 print "Removing %s from %s" % (target_host, service['service_description'])
                 new_item = nc.get_service(service['service_description'],target_host)
@@ -108,7 +107,7 @@ def delete():
             else:
                 print "Unknown Action"
                 sys.exit(1)
-    
+
             nc.commit()
     except Exception:
         print "No service found for host %s" % target_host
@@ -121,37 +120,37 @@ def delete():
     for target_group in group_list:
         group_obj = nc.get_hostgroup(target_group)
         if not target_group:
-            continue 
+            continue
         if not group_obj:
             sys.stderr.write("%s does not exist\n" % target_group)
             continue
-        
+
         ## Get a list of the host_name's in this group
-        try: 
+        try:
             existing_list = sorted(set(group_obj['members'].split(",")))
             if target_host not in existing_list:
                 #sys.stderr.write("%s is not in the group: %s\n" % (target_host, target_group ))
                 continue
             else:
                 existing_list.remove(target_host)
-            
+
             print "Removing %s from %s" % (target_host, target_group)
-            
+
             ## Alphabetize the list, for easier readability (and to make it pretty)
             existing_list = sorted(set(existing_list))
-            
+
             ## Remove old group
             nc['all_hostgroup'].remove(group_obj)
-            
+
             ## Save the new member list
             group_obj['members'] = ",".join(existing_list)
-            
+
             ## Mark the commit flag for the group
             group_obj['meta']['needs_commit'] = True
-            
+
             ## Add the group back in with new members
             nc['all_hostgroup'].append(group_obj)
-            
+
             ## Commit the changes to file
             nc.commit()
         except Exception:
@@ -159,7 +158,7 @@ def delete():
             pass
 
 
-     
+
     #3 Finally delete host
     print "<<<==== 3# Deleting Host ===>>>"
     result = nc.delete_object('host', target_host)
@@ -169,10 +168,10 @@ def delete():
        print "%s does not exists" % target_host
     nc.commit()
     nc.cleanup()
-     
+
 
 if __name__ == '__main__':
     if 'add' in action:
-        add() 
+        add()
     elif 'del' in action:
         delete()
