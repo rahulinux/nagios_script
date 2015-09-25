@@ -3,17 +3,18 @@
 import sys
 from pynag.Parsers import config
 import pynag.Model
+import docopt
 
 
+usage = """
+Usage:
+   manage-nagios.py --add --env <environment> --host <fqdn> --groups <groups>
+   manage-nagios.py --del --host <fqdn>
+   manage-nagios.py (-h | --help)
 
-# Show Help
-if len(sys.argv) == 4 or len(sys.argv) == 3:
-   action = sys.argv[1]
-   target_host = sys.argv[2]
-else:
-   sys.stderr.write("Usage:\n\t%s --add Hostname group1,group2\n" % ( sys.argv[0] ))
-   sys.stderr.write("\t%s --del Hostname\n\n" % ( sys.argv[0] ))
-   sys.exit(2)
+Note: You can specify multiple group seperated by comma
+"""
+
 
 
 # nagios config file
@@ -24,7 +25,7 @@ nc.cleanup()
 
 def add():
     host = target_host
-    group = sys.argv[3].split(",")
+    group = groups.split(",")
     ## find services that this host belogns to
     print "<<<==== 1# Adding Host ===>>>"
     if not nc.get_host(target_host):
@@ -42,8 +43,9 @@ def add():
         new_host.first_notification_delay = '0   # Send notification soon after change in the hard state'
         new_host.notification_interval   =  '0    # Send the notification once'
         new_host.notification_options   =   'd,u,r'
+        new_host.set_macro('$_HOSTsubject$', env)
         new_host.save()
-        sys.stderr.write("%s Successfully Added\n" % ( target_host ))
+        sys.stdout.write("%s Successfully Added\n" % ( target_host ))
     else:
         sys.stderr.write("%s already exists\n" % ( target_host ))
 
@@ -171,7 +173,13 @@ def delete():
 
 
 if __name__ == '__main__':
-    if 'add' in action:
-        add()
-    elif 'del' in action:
-        delete()
+    args = docopt.docopt(usage,version='version 0.1 by Rahul Patil<http://linuxian.com>')
+    print args
+    if args['--add']:
+       target_host,env,groups = args['<fqdn>'],args['<environment>'],args['<groups>']
+       add()
+    elif args['--del']:
+       target_host = args['<fqdn>']
+       delete()
+    else:
+      sys.exit(1)
